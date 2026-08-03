@@ -70,9 +70,9 @@ Please confirm.`;window.open(rn(k.whatsapp||k.phone1,T),"_blank"),Xl([])},JV=(l)
       hasLoadedFromFirebase = true;
       const isAdminOpen = document.body.innerHTML.includes("SK FITNESS ADMIN");
       if (!isAdminOpen || !localStorage.getItem("sk_is_admin_logged")) {
-        if (hasLoadedFromFirebase && performance.now() > 3000) {
+        if (false && hasLoadedFromFirebase && performance.now() > 3000) {
           console.log("Reloading for customer to show new data");
-          location.reload();
+          console.log("reload blocked - fixed");
         }
       }
     } catch(e){ console.error(e); }
