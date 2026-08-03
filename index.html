@@ -30,112 +30,110 @@ Please confirm.`;window.open(rn(k.whatsapp||k.phone1,T),"_blank"),Xl([])},JV=(l)
 
 <!-- 🔥 FIREBASE LIVE SYNC - SK FITNESS ZONE - SAME DESIGN 100% -->
 
-<!-- 🔥 FIREBASE LIVE SYNC - SK FITNESS ZONE - FINAL 100% INSTANT - NO LOOP -->
+
+<script>
+(function(){
+  </script>
+
+
+<!-- 🔥 SK FITNESS ZONE - PERFECT LIVE SYNC - NO BUG - 2025 -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
 (function(){
   const DB_URL = "https://sk-fitness-zone-default-rtdb.asia-southeast1.firebasedatabase.app/";
-  const FIRE_PATH = "sk_fitness/live";
-  
-  let db = null;
-  try {
-    firebase.initializeApp({ databaseURL: DB_URL });
+  const DB_PATH = "sk_fitness/live";
+  let db;
+  try{
+    if(!firebase.apps.length) firebase.initializeApp({databaseURL: DB_URL});
     db = firebase.database();
-    console.log("🔥 FIREBASE CONNECTED - FINAL INSTANT VERSION");
-  } catch(e){ console.error("Firebase init fail", e); return; }
+    console.log("🔥 PERFECT FIREBASE CONNECTED");
+  }catch(e){ console.log("FB fail",e); return; }
 
-  let isLoadingFromFirebase = false;
-  let firstLoadDone = false;
-  let lastHash = localStorage.getItem("sk_firebase_hash") || "";
+  let firstLoad = true;
+  let isSavingFromFB = false;
+  let lastSavedString = "";
 
-  function saveToLocal(data){
-    isLoadingFromFirebase = true;
+  function saveToLocalStorage(data){
+    isSavingFromFB = true;
     try{
-      if (data.plans) localStorage.setItem("sk_membership_plans", JSON.stringify(data.plans));
-      if (data.trainers) localStorage.setItem("sk_trainers", JSON.stringify(data.trainers));
-      if (data.products) localStorage.setItem("sk_products", JSON.stringify(data.products));
-      if (data.settings) localStorage.setItem("sk_settings", JSON.stringify(data.settings));
-      if (data.grandMoments) localStorage.setItem("sk_grand_moments", JSON.stringify(data.grandMoments));
-      if (data.galleryImages) localStorage.setItem("sk_gallery_images", JSON.stringify(data.galleryImages));
-      if (data.videos) localStorage.setItem("sk_videos", JSON.stringify(data.videos));
-      if (data.leads) localStorage.setItem("sk_leads", JSON.stringify(data.leads));
+      if(data.plans) localStorage.setItem("sk_membership_plans", JSON.stringify(data.plans));
+      if(data.trainers) localStorage.setItem("sk_trainers", JSON.stringify(data.trainers));
+      if(data.products) localStorage.setItem("sk_products", JSON.stringify(data.products));
+      if(data.settings) localStorage.setItem("sk_settings", JSON.stringify(data.settings));
+      if(data.grandMoments) localStorage.setItem("sk_grand_moments", JSON.stringify(data.grandMoments));
+      if(data.galleryImages) localStorage.setItem("sk_gallery_images", JSON.stringify(data.galleryImages));
+      if(data.videos) localStorage.setItem("sk_videos", JSON.stringify(data.videos));
+      if(data.leads) localStorage.setItem("sk_leads", JSON.stringify(data.leads));
     }catch(e){}
-    setTimeout(()=>{ isLoadingFromFirebase = false; }, 500);
+    setTimeout(()=>{ isSavingFromFB = false; }, 800);
   }
 
-  // LISTEN - INSTANT FOR ALL
-  db.ref(FIRE_PATH).on('value', (snap) => {
+  // Listen
+  db.ref(DB_PATH).on('value', snap=>{
     const data = snap.val();
-    if (!data) return;
-    const hash = JSON.stringify(data).length + "_" + Object.keys(data).length; // simple hash
-    const fullStr = JSON.stringify(data);
-
-    if (!firstLoadDone) {
-      console.log("🔥 FIRST LOAD - Saving but NO RELOAD");
-      saveToLocal(data);
-      lastHash = fullStr;
-      localStorage.setItem("sk_firebase_hash", fullStr);
-      firstLoadDone = true;
+    if(!data) { firstLoad=false; return; }
+    const str = JSON.stringify(data);
+    if(firstLoad){
+      console.log("First load - no reload");
+      saveToLocalStorage(data);
+      lastSavedString = str;
+      firstLoad = false;
       return;
     }
-
-    // Only if data actually changed
-    if (fullStr !== lastHash) {
-      console.log("🔥 NEW DATA FROM ADMIN - Updating all phones INSTANTLY");
-      saveToLocal(data);
-      lastHash = fullStr;
-      localStorage.setItem("sk_firebase_hash", fullStr);
-      
-      // Check if user is admin - if admin, don't reload
-      const isAdmin = document.body.innerHTML.includes("Dashboard") || localStorage.getItem("sk_admin_logged") === "1";
-      if (!isAdmin) {
-        // ONE TIME SMART RELOAD - only when new data comes
-        const lastReload = sessionStorage.getItem("sk_last_reload");
-        const now = Date.now();
-        if (!lastReload || (now - parseInt(lastReload) > 10000)) { // 10 sec gap to prevent loop
-          console.log("✅ Reloading once to show new admin data");
-          sessionStorage.setItem("sk_last_reload", now.toString());
-          location.reload();
-        }
+    if(str !== lastSavedString){
+      console.log("Admin changed data - updating phone");
+      saveToLocalStorage(data);
+      lastSavedString = str;
+      // Smart single reload only for customer, not admin, with 10sec protection
+      const isAdmin = localStorage.getItem("sk_is_admin") === "1";
+      const lastReload = sessionStorage.getItem("sk_last_auto_reload");
+      const now = Date.now();
+      if(!isAdmin && (!lastReload || now - parseInt(lastReload) > 15000)){
+        sessionStorage.setItem("sk_last_auto_reload", now.toString());
+        location.reload();
       }
     }
   });
 
-  // SAVE TO FIREBASE WHEN ADMIN SAVES
-  const originalSetItem = localStorage.setItem.bind(localStorage);
-  localStorage.setItem = function(key, value) {
-    originalSetItem(key, value);
-    if (isLoadingFromFirebase) return;
-    const adminKeys = ["sk_membership_plans","sk_trainers","sk_products","sk_settings","sk_grand_moments","sk_gallery_images","sk_videos","sk_leads"];
-    if (!adminKeys.includes(key)) return;
-    try {
-      let fbKey = "";
-      if (key === "sk_membership_plans") fbKey = "plans";
-      else if (key === "sk_trainers") fbKey = "trainers";
-      else if (key === "sk_products") fbKey = "products";
-      else if (key === "sk_settings") fbKey = "settings";
-      else if (key === "sk_grand_moments") fbKey = "grandMoments";
-      else if (key === "sk_gallery_images") fbKey = "galleryImages";
-      else if (key === "sk_videos") fbKey = "videos";
-      else if (key === "sk_leads") fbKey = "leads";
-      if (fbKey) {
-        const parsed = JSON.parse(value);
-        db.ref(FIRE_PATH + "/" + fbKey).set(parsed);
-        console.log("✅ SAVED TO FIREBASE - All customers will see in 2 sec!");
-      }
-    } catch(e){}
-  };
-
+  // Detect admin
   setInterval(()=>{
-    if (document.body.innerHTML.includes("Dashboard") && document.body.innerHTML.includes("Grand Moments")) {
-      localStorage.setItem("sk_admin_logged", "1");
+    const bodyText = document.body.innerHTML;
+    if(bodyText.includes("Dashboard") && bodyText.includes("Logout")){
+      localStorage.setItem("sk_is_admin","1");
     }
-  }, 2000);
+  }, 3000);
 
+  // Save to Firebase
+  const origSet = localStorage.setItem.bind(localStorage);
+  localStorage.setItem = function(k,v){
+    origSet(k,v);
+    if(isSavingFromFB) return;
+    const map = {
+      "sk_membership_plans":"plans",
+      "sk_trainers":"trainers",
+      "sk_products":"products",
+      "sk_settings":"settings",
+      "sk_grand_moments":"grandMoments",
+      "sk_gallery_images":"galleryImages",
+      "sk_videos":"videos",
+      "sk_leads":"leads"
+    };
+    if(!map[k]) return;
+    try{
+      const parsed = JSON.parse(v);
+      // Check size - if > 5MB skip image heavy (firebase limit)
+      if(v.length > 4000000){
+        console.warn("Data too big for Firebase, compress images!");
+        return;
+      }
+      db.ref(DB_PATH+"/"+map[k]).set(parsed).then(()=>{
+        console.log("✅ Live saved to all phones: "+k);
+      });
+    }catch(e){}
+  };
 })();
 </script>
-
-
 </body>
+
 </html>
