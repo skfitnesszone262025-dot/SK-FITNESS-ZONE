@@ -207,4 +207,8 @@ Please confirm.`;window.open(rn(k.whatsapp||k.phone1,T),"_blank"),Xl([])},JV=(l)
   };
 })();
 </script>
+<script>
+(function(){const P="sk_fitness/live";let db=window.SK_DB;try{if(!db&&firebase){if(!firebase.apps.length)firebase.initializeApp({databaseURL:"https://sk-fitness-zone-default-rtdb.asia-southeast1.firebasedatabase.app/"});db=firebase.database();window.SK_DB=db}}catch(e){return}let L=false;setInterval(()=>{try{if(document.body.innerHTML.includes("Dashboard"))localStorage.setItem("sk_is_admin","1")}catch(e){}},2000);if(!db)return;db.ref(P).on('value',s=>{let d=s.val();if(!d)return;L=true;try{if(d.plans)localStorage.setItem("sk_membership_plans",JSON.stringify(d.plans));if(d.trainers)localStorage.setItem("sk_trainers",JSON.stringify(d.trainers));if(d.products)localStorage.setItem("sk_products",JSON.stringify(d.products));if(d.settings)localStorage.setItem("sk_settings",JSON.stringify(d.settings));if(d.grandMoments)localStorage.setItem("sk_grand_moments",JSON.stringify(d.grandMoments));if(d.galleryImages)localStorage.setItem("sk_gallery_images",JSON.stringify(d.galleryImages));if(d.videos)localStorage.setItem("sk_videos",JSON.stringify(d.videos));if(d.leads)localStorage.setItem("sk_leads",JSON.stringify(d.leads))}catch(e){}setTimeout(()=>L=false,1500)});let o=localStorage.setItem.bind(localStorage);localStorage.setItem=(k,v)=>{o(k,v);if(L)return;if(localStorage.getItem("sk_is_admin")!=="1")return;let m={"sk_membership_plans":"plans","sk_trainers":"trainers","sk_products":"products","sk_settings":"settings","sk_grand_moments":"grandMoments","sk_gallery_images":"galleryImages","sk_videos":"videos","sk_leads":"leads"};if(m[k])try{db.ref(P+"/"+m[k]).set(JSON.parse(v))}catch(e){}}})();
+</script>
 </body>
+</html>
